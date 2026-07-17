@@ -5,7 +5,7 @@ spring:
   application:
     name: shipping-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/shipping_db
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/shipping_db
     username: saga
     password: saga
   jpa:
