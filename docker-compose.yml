@@ -1,0 +1,61 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: saga-postgres
+    environment:
+      POSTGRES_USER: saga
+      POSTGRES_PASSWORD: saga
+      POSTGRES_DB: saga
+    ports:
+      - "5432:5432"
+    volumes:
+      - saga-postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U saga"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  order-service:
+    build:
+      context: .
+      dockerfile: order-service/Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  inventory-service:
+    build:
+      context: .
+      dockerfile: inventory-service/Dockerfile
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  payment-service:
+    build:
+      context: .
+      dockerfile: payment-service/Dockerfile
+    ports:
+      - "8083:8083"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  shipping-service:
+    build:
+      context: .
+      dockerfile: shipping-service/Dockerfile
+    ports:
+      - "8084:8084"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  saga-postgres-data:
