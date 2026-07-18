@@ -1,6 +1,7 @@
 package com.sagademo.shipping.service;
 
 import com.sagademo.shipping.dto.CreateShipmentRequest;
+import com.sagademo.shipping.exception.SimulatedFailureException;
 import com.sagademo.shipping.model.Shipment;
 import com.sagademo.shipping.model.ShipmentStatus;
 import com.sagademo.shipping.repository.ShipmentRepository;
@@ -19,6 +20,9 @@ public class ShippingService {
     }
 
     public Shipment confirm(CreateShipmentRequest request) {
+        if (Boolean.TRUE.equals(request.simulateFailure())) {
+            throw new SimulatedFailureException("Simulated failure confirming shipment for saga " + request.sagaId());
+        }
         return shipmentRepository.findByIdempotencyKey(request.idempotencyKey())
                 .orElseGet(() -> {
                     Shipment shipment = new Shipment();

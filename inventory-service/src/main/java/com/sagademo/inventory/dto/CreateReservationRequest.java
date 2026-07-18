@@ -10,6 +10,7 @@ public record CreateReservationRequest(
         @NotBlank String idempotencyKey,
         @NotNull UUID sagaId,
         @NotBlank String itemId,
-        @Positive int quantity
+        @Positive int quantity,
+        Boolean simulateFailure
 ) {
 }

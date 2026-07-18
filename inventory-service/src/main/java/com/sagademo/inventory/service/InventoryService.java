@@ -1,6 +1,7 @@
 package com.sagademo.inventory.service;
 
 import com.sagademo.inventory.dto.CreateReservationRequest;
+import com.sagademo.inventory.exception.SimulatedFailureException;
 import com.sagademo.inventory.model.Reservation;
 import com.sagademo.inventory.model.ReservationStatus;
 import com.sagademo.inventory.repository.ReservationRepository;
@@ -19,6 +20,9 @@ public class InventoryService {
     }
 
     public Reservation reserve(CreateReservationRequest request) {
+        if (Boolean.TRUE.equals(request.simulateFailure())) {
+            throw new SimulatedFailureException("Simulated failure reserving inventory for saga " + request.sagaId());
+        }
         return reservationRepository.findByIdempotencyKey(request.idempotencyKey())
                 .orElseGet(() -> {
                     Reservation reservation = new Reservation();

@@ -11,6 +11,7 @@ public record ChargePaymentRequest(
         @NotBlank String idempotencyKey,
         @NotNull UUID sagaId,
         @NotNull UUID customerId,
-        @NotNull @Positive BigDecimal amount
+        @NotNull @Positive BigDecimal amount,
+        Boolean simulateFailure
 ) {
 }

@@ -29,4 +29,9 @@ public class OrderController {
     public ResponseEntity<Order> cancel(@PathVariable UUID id) {
         return ResponseEntity.ok(orderService.cancel(id));
     }
+
+    @PostMapping("/{id}/confirm")
+    public ResponseEntity<Order> confirm(@PathVariable UUID id) {
+        return ResponseEntity.ok(orderService.confirm(id));
+    }
 }

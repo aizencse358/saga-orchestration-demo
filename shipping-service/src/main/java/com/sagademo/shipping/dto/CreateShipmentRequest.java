@@ -9,6 +9,7 @@ public record CreateShipmentRequest(
         @NotBlank String idempotencyKey,
         @NotNull UUID sagaId,
         @NotBlank String carrier,
-        @NotBlank String address
+        @NotBlank String address,
+        Boolean simulateFailure
 ) {
 }

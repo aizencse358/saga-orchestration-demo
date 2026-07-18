@@ -1,6 +1,7 @@
 package com.sagademo.payment.service;
 
 import com.sagademo.payment.dto.ChargePaymentRequest;
+import com.sagademo.payment.exception.SimulatedFailureException;
 import com.sagademo.payment.model.Payment;
 import com.sagademo.payment.model.PaymentStatus;
 import com.sagademo.payment.repository.PaymentRepository;
@@ -19,6 +20,9 @@ public class PaymentService {
     }
 
     public Payment charge(ChargePaymentRequest request) {
+        if (Boolean.TRUE.equals(request.simulateFailure())) {
+            throw new SimulatedFailureException("Simulated failure charging payment for saga " + request.sagaId());
+        }
         return paymentRepository.findByIdempotencyKey(request.idempotencyKey())
                 .orElseGet(() -> {
                     Payment payment = new Payment();

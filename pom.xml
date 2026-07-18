@@ -17,6 +17,7 @@
         <module>inventory-service</module>
         <module>payment-service</module>
         <module>shipping-service</module>
+        <module>orchestrator-custom</module>
     </modules>
 
     <properties>
