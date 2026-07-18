@@ -1,0 +1,29 @@
+server:
+  port: 8091
+
+spring:
+  application:
+    name: orchestrator-temporal
+  temporal:
+    connection:
+      target: ${TEMPORAL_ADDRESS:localhost:7233}
+    namespace: default
+    workers-auto-discovery:
+      packages:
+        - com.sagademo.temporal
+
+services:
+  order:
+    base-url: ${ORDER_SERVICE_URL:http://localhost:8081}
+  inventory:
+    base-url: ${INVENTORY_SERVICE_URL:http://localhost:8082}
+  payment:
+    base-url: ${PAYMENT_SERVICE_URL:http://localhost:8083}
+  shipping:
+    base-url: ${SHIPPING_SERVICE_URL:http://localhost:8084}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
