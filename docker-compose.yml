@@ -173,5 +173,25 @@ services:
       shipping-service:
         condition: service_started
 
+  load-generator:
+    profiles: ["bench"]
+    build:
+      context: .
+      dockerfile: load-generator/Dockerfile
+    volumes:
+      - ./results:/app/results
+    environment:
+      LOADGEN_TIER: custom
+      LOADGEN_BASE_URL: http://orchestrator-custom:8090
+      LOADGEN_REQUESTS: "100"
+      LOADGEN_CONCURRENCY: "10"
+      LOADGEN_FAILURE_RATE: "0.0"
+      LOADGEN_RUN_ID: manual
+    depends_on:
+      orchestrator-custom:
+        condition: service_started
+      orchestrator-temporal:
+        condition: service_started
+
 volumes:
   saga-postgres-data:

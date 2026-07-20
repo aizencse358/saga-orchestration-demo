@@ -19,6 +19,7 @@
         <module>shipping-service</module>
         <module>orchestrator-custom</module>
         <module>orchestrator-temporal</module>
+        <module>load-generator</module>
     </modules>
 
     <properties>

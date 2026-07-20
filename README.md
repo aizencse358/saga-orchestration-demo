@@ -65,28 +65,48 @@ saga-orchestration-demo/
 ├── inventory-service/
 ├── payment-service/
 ├── shipping-service/
-├── orchestrator-custom/        # Tier 1 (not yet built)
-├── orchestrator-temporal/      # Tier 2 (not yet built)
-├── load-generator/             # virtual-thread saga driver, --profile bench (not yet built)
+├── orchestrator-custom/        # Tier 1 ✅
+├── orchestrator-temporal/      # Tier 2 ✅
+├── load-generator/             # virtual-thread saga driver, --profile bench ✅
 ├── chaos/                      # failure/crash injection, --profile bench (not yet built)
 └── results/                    # benchmark CSV output
 ```
 
 ## Status
 
-Downstream services are scaffolded: entity + repository + idempotent
-do/undo service + REST controller + Flyway migration per service. No
-orchestration wired up yet.
+Both orchestrator tiers are built and verified end-to-end (happy path +
+compensation, confirmed against each downstream service's Postgres state).
+The load generator drives either tier through the identical `/sagas` REST
+contract and reports latency percentiles + outcome counts. Remaining work
+is the chaos injector and the final benchmark run.
+
+## Load generator
+
+```bash
+docker compose --profile bench run --rm \
+  -e LOADGEN_TIER=custom \
+  -e LOADGEN_BASE_URL=http://orchestrator-custom:8090 \
+  -e LOADGEN_REQUESTS=200 \
+  -e LOADGEN_CONCURRENCY=20 \
+  -e LOADGEN_FAILURE_RATE=0.2 \
+  -e LOADGEN_RUN_ID=run1 \
+  load-generator
+```
+
+Swap `LOADGEN_TIER=temporal` / `LOADGEN_BASE_URL=http://orchestrator-temporal:8091`
+to drive Tier 2 instead. Results land in `results/<tier>-<run-id>.csv`; failure
+injection is randomly assigned per saga (at the given rate) to one of
+CREATE_ORDER/RESERVE_INVENTORY/CHARGE_PAYMENT/CONFIRM_SHIPMENT, the only
+steps that accept a `simulateFailure` flag downstream.
 
 ## Build sequence
 
 1. ~~Scaffold the four downstream services~~ ✅
-2. Build Tier 1 custom orchestrator: state machine, Postgres event log,
-   message broker command/reply, idempotency keys.
-3. Verify Tier 1 end-to-end: happy path + each failure/compensation path.
-4. Build Tier 2 Temporal workflow + activities against the same services.
-5. Verify Tier 2 end-to-end.
-6. Build load generator (virtual threads) and chaos injector.
+2. ~~Build Tier 1 custom orchestrator~~ ✅
+3. ~~Verify Tier 1 end-to-end~~ ✅
+4. ~~Build Tier 2 Temporal workflow + activities~~ ✅
+5. ~~Verify Tier 2 end-to-end~~ ✅
+6. ~~Build load generator (virtual threads)~~ ✅ — chaos injector still open
 7. Run identical benchmark suite against both tiers, produce comparison
    table/CSV.
 
